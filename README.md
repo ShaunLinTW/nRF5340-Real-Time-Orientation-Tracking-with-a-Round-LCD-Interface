@@ -141,6 +141,7 @@ This section describes the pin mapping of the target hardware for which this ver
 | Back Light (didn't use)                   |        BL        |            P1.06 |
 | VCC / 3.3V                                |        VCC       |              VDD |
 | GND                                       |        GND       |              GND |
+|                                           |                  |                  |
 | **BMI270 IMU Sensor Pins**                |                  |                  |
 | Serial Clock                              |        SCL       |            P0.08 |
 | Master Out Slave In                       |     MOSI/SDA     |            P0.09 |
