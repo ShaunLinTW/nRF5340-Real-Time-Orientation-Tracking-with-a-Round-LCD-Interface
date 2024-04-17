@@ -1,0 +1,90 @@
+/**
+ * @brief This is the app.overlay custom device-tree of the application. Including the spi1 and spi4 configuration.
+ * @code
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause.
+ * @endcode
+ *
+ * @file app.overlay
+ * @version 1.0
+ * @author Shaun Lin (hl116@rice.edu)
+ * @copyright Rice University & HealthSeers Inc. Ⓒ 2024
+ */
+
+ / {
+    chosen {
+        zephyr,display = &gc9a01;
+    };
+};
+// custom controlpins for spi1
+&pinctrl {
+    spi1_default: spi1_default {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
+				<NRF_PSEL(SPIM_MISO, 0, 10)>,
+				<NRF_PSEL(SPIM_MOSI, 0, 9)>;
+		};
+	};
+
+	spi1_sleep: spi1_sleep {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
+                <NRF_PSEL(SPIM_MISO, 0, 10)>,
+                <NRF_PSEL(SPIM_MOSI, 0, 9)>;
+			low-power-enable;
+		};
+	};
+
+};
+
+/* spi4 pins configuration: P1.15->SCL/D0, 
+ *                          P1.14->MISO, // didn't use
+ *                          P1.13->MOSI/D1, 
+ *                          P1.12->CS,
+ *                          P1.11->DC,
+ *                          P1.10->RESET, 
+ *                          P1.06->BL // Backlight didn't use
+ */
+&spi4 {
+	status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi4_default>;
+    pinctrl-1 = <&spi4_sleep>;
+    pinctrl-names = "default", "sleep";
+    cs-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
+
+    gc9a01: gc9a01@0 {
+        compatible = "waveshare,gc9a01";
+        status = "okay";
+        spi-max-frequency = <24000000>; // 24MHz
+        reg = <0>;
+        width = <240>;
+        height = <240>;
+        bl-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+        reset-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+        dc-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+/* spi1 pins configuration: P0.08->SCL, 
+ *                          P0.09->MOSI/SDA, 
+ *                          P0.10->MISO/SDO, 
+ *                          P0.11->CS 
+ */
+&spi1 {
+	status = "okay";
+    pinctrl-0 = <&spi1_default>;
+    pinctrl-1 = <&spi1_sleep>;
+    pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
+
+	bmi270@0 {
+		compatible = "bosch,bmi270";
+		reg = <0>;
+        spi-max-frequency = <8000000>; // 8MHz
+		label = "BMI270";
+		// interrupt-parent = <&gpioa>;
+		// interrupts = <GPIO_PIN(PA, 0, GPIO_ACTIVE_LOW)>;
+	};
+};
+
+// ----------------- End of File -----------------
